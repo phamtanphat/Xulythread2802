@@ -28,30 +28,66 @@ public class MainActivity extends AppCompatActivity {
         Thread threada = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0 ; i < 50 ; i++){
-                    int a = new Random().nextInt(100);
-                    Log.d("BBB" , " A " + a + " " + i);
-                    dataobject.setA(a);
+                synchronized (dataobject){
+                    for (int i = 0 ; i < 50 ; i++){
+                        if (dataobject.getLaco() == 2){
+                            int a = new Random().nextInt(100);
+                            Log.d("BBB" , " A " + a + " " + i);
+                            dataobject.setA(a);
+                            dataobject.setLaco(3);
+                        }else{
+                            try {
+                                dataobject.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
+
             }
         });
         Thread threadb = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0 ; i < 50 ; i++){
-                    int b = new Random().nextInt(100);
-                    Log.d("BBB" , " B " + b + " " + i);
-                    dataobject.setB(b);
+                synchronized (dataobject){
+                    for (int i = 0 ; i < 50 ; i++){
+                        if (dataobject.getLaco() == 3){
+                            int b = new Random().nextInt(100);
+                            Log.d("BBB" , " B " + b + " " + i);
+                            dataobject.setB(b);
+                            dataobject.setLaco(4);
+                        }else{
+                            try {
+                                dataobject.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
                 }
+
             }
         });
         Thread threadc = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0 ; i < 50 ; i++){
-                    int tong = dataobject.tinhTong();
-                    Log.d("BBB" , " C " + tong + " " + i);
+                synchronized (dataobject){
+                    for (int i = 0 ; i < 50 ; i++){
+                        if (dataobject.getLaco() == 4){
+                            int tong = dataobject.tinhTong();
+                            Log.d("BBB" , " C " + tong + " " + i);
+                            dataobject.setLaco(2);
+                        }else{
+                            try {
+                                dataobject.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
+                    }
                 }
             }
         });
