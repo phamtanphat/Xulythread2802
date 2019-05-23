@@ -19,22 +19,26 @@ public class MainActivity extends AppCompatActivity {
 
 
     Dataobject dataobject = new Dataobject(0,0,2);
+    int index = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        Thread threada = new Thread(new Runnable() {
+        final Thread threada = new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (dataobject){
-                    for (int i = 0 ; i < 50 ; i++){
+                    for (int i = 0 ; i < 100 ;){
                         if (dataobject.getLaco() == 2){
+                            i++;
+                            index = i;
                             int a = new Random().nextInt(100);
-                            Log.d("BBB" , " A " + a + " " + i);
+                            Log.d("BBB" , " A " + a + " " + index);
                             dataobject.setA(a);
                             dataobject.setLaco(3);
+                            dataobject.notifyAll();
                         }else{
                             try {
                                 dataobject.wait();
@@ -43,20 +47,30 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
+                    dataobject.setLaco(5);
+                    dataobject.notifyAll();
                 }
 
             }
         });
-        Thread threadb = new Thread(new Runnable() {
+        final Thread threadb = new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (dataobject){
-                    for (int i = 0 ; i < 50 ; i++){
-                        if (dataobject.getLaco() == 3){
+                    for (; true; ){
+                        if (dataobject.getLaco() == 3 || dataobject.getLaco() == 5){
                             int b = new Random().nextInt(100);
-                            Log.d("BBB" , " B " + b + " " + i);
+                            Log.d("BBB" , " B " + b + " " + index);
+                            if (dataobject.getLaco() == 5){
+                                dataobject.setB(b);
+                                dataobject.setLaco(6);
+                                dataobject.notifyAll();
+                                return;
+                            }
                             dataobject.setB(b);
                             dataobject.setLaco(4);
+                            dataobject.notifyAll();
+
                         }else{
                             try {
                                 dataobject.wait();
@@ -70,15 +84,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        Thread threadc = new Thread(new Runnable() {
+        final Thread threadc = new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (dataobject){
-                    for (int i = 0 ; i < 50 ; i++){
-                        if (dataobject.getLaco() == 4){
+                    for (; true ; ){
+                        if (dataobject.getLaco() == 4 || dataobject.getLaco() == 6){
+
                             int tong = dataobject.tinhTong();
-                            Log.d("BBB" , " C " + tong + " " + i);
+                            Log.d("BBB" , " C " + tong + " " + index);
+
+                            if (dataobject.getLaco() == 6){
+                                return;
+                            }
                             dataobject.setLaco(2);
+                            dataobject.notifyAll();
                         }else{
                             try {
                                 dataobject.wait();
@@ -86,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-
                     }
                 }
             }
@@ -102,6 +121,19 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d("BBB", thread.getState().name() + "");
 //            }
 //        },4000);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("CCC",threadc.getState().name());
+                Log.d("CCC",threadb.getState().name());
+                Log.d("CCC",threadc.getState().name());
+            }
+        },3000);
+//        a b c d
+//                =>a random
+//                => b random
+//                => c = -a;
+//                => d = -b
 
     }
     private  void inLog(String ten ){
