@@ -1,49 +1,63 @@
 package khoapham.ptp.phamtanphat.xulybatdongbo2802;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.Set;
+
+
 public class MainActivity extends AppCompatActivity {
 
-    Button btnXulybatdongbo;
-    Thread threadA,threadB,threadC;
-    int a,b,c = 0;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected synchronized void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnXulybatdongbo = findViewById(R.id.buttonXulythread);
-
-        btnXulybatdongbo.setOnClickListener(new View.OnClickListener() {
+         final Thread thread = new Thread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                threadA = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        a = (int) Math.floor(Math.random() * 3 + 1);
-                        Log.d("BBB","Thread A : " + a);
-                    }
-                });
-                threadB = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        b = (int) Math.floor(Math.random() * 3 + 1);
-                        Log.d("BBB","Thread b : " + b);
-                    }
-                });
-                threadB = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        c = (int) Math.floor(Math.random() * 3 + 1);
-                        Log.d("BBB","Thread C : " + c);
-                    }
-                });
-
+            public void run() {
+                inLog("A");
             }
         });
+
+        thread.start();
+
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                inLog("B");
+            }
+        });
+
+        thread1.start();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("BBB", "A " + thread.getState().name() + "");
+                Log.d("BBB", "B " + thread.getState().name() + "");
+            }
+        },1000);
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d("BBB", thread.getState().name() + "");
+//            }
+//        },4000);
+
+    }
+    private synchronized void inLog(String ten ){
+        for (int i = 0 ; i <1000 ; i++){
+            Log.d("BBB",ten + " " + i);
+        }
     }
 }
