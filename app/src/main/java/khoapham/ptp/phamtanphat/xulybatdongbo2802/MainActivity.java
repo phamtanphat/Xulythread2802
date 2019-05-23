@@ -10,41 +10,80 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected synchronized void onCreate(Bundle savedInstanceState) {
+    protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-         final Thread thread = new Thread(new Runnable() {
+//         final Thread thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                inLog("A");
+//            }
+//        });
+//
+//        thread.start();
+//
+//        final Thread thread1 = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                inLog("B");
+//            }
+//        });
+//
+//        thread1.start();
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d("BBB", "A " + thread.getState().name() + "");
+//                Log.d("BBB", "B " + thread1.getState().name() + "");
+//            }
+//        },1000);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 inLog("A");
             }
         });
-
-        thread.start();
-
-        Thread thread1 = new Thread(new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
                 inLog("B");
             }
         });
-
-        thread1.start();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
-                Log.d("BBB", "A " + thread.getState().name() + "");
-                Log.d("BBB", "B " + thread.getState().name() + "");
+                inLog("C");
             }
-        },1000);
+        });
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                inLog("D");
+            }
+        });
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                inLog("E");
+            }
+        });
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                inLog("F");
+            }
+        });
 
 //        Handler handler = new Handler();
 //        handler.postDelayed(new Runnable() {
@@ -55,9 +94,15 @@ public class MainActivity extends AppCompatActivity {
 //        },4000);
 
     }
-    private synchronized void inLog(String ten ){
-        for (int i = 0 ; i <1000 ; i++){
-            Log.d("BBB",ten + " " + i);
+    private  void inLog(String ten ){
+        for (int i = 0 ; i <100 ; i++){
+            try {
+                Thread.sleep(100);
+                Log.d("BBB",ten + " " + i);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
